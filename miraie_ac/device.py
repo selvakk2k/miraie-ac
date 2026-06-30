@@ -1,7 +1,7 @@
 from typing import Callable
 from .broker import MirAIeBroker
 from .enums import PowerMode, FanMode, SwingMode, DisplayMode, HVACMode, PresetMode, ConvertiMode
-from .utils import toFloat
+from .utils import toFloat, parse_room_temp
 from .logger import LOGGER
 
 
@@ -145,10 +145,11 @@ class Device:
 
     def status_handler(self, status: any):
         LOGGER.debug(f"Raw device status: {status}")
+        firmware_version = getattr(getattr(self, "details", None), "firmware_version", "")
         status_obj = DeviceStatus(
             is_online=self.status.is_online,
             temperature=toFloat(status["actmp"]),
-            room_temperature=toFloat(status["rmtmp"]),
+            room_temperature=parse_room_temp(status["rmtmp"], firmware_version),
             power_mode=PowerMode(status["ps"]),
             fan_mode=FanMode(status["acfs"]),
             v_swing_mode=SwingMode(status["acvs"]),

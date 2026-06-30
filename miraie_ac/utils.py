@@ -17,3 +17,20 @@ def toFloat(value: str) -> float:
         return float(value)
     except ValueError:
         return -1.0
+
+
+def parse_room_temp(value: str, firmware_version: str = "") -> float:
+    """Parse rmtmp, accounting for the packed format used in firmware 3.02+."""
+    try:
+        major, minor = firmware_version.split('.')[:2]
+        is_packed_firmware = (int(major), int(minor)) >= (3, 2)
+    except (ValueError, AttributeError):
+        is_packed_firmware = False
+
+    if is_packed_firmware and '.' in value:
+        try:
+            return float(value.split('.')[1])
+        except (ValueError, IndexError):
+            return toFloat(value)
+
+    return toFloat(value)

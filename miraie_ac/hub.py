@@ -9,7 +9,7 @@ from .home import Home
 from .device import Device, DeviceDetails, DeviceStatus
 from .enums import PowerMode, FanMode, SwingMode, DisplayMode, HVACMode, PresetMode, ConvertiMode, \
     ConsumptionPeriodType
-from .utils import is_valid_email, toFloat
+from .utils import is_valid_email, toFloat, parse_room_temp
 from .logger import LOGGER
 
 
@@ -215,7 +215,10 @@ class MirAIeHub:
                 status_obj = DeviceStatus(
                     is_online=status["onlineStatus"] == "true",
                     temperature=toFloat(status["actmp"]),
-                    room_temperature=toFloat(status["rmtmp"]),
+                    room_temperature=parse_room_temp(
+                        status["rmtmp"],
+                        getattr(getattr(device, "details", None), "firmware_version", ""),
+                    ),
                     power_mode=PowerMode(status["ps"]),
                     fan_mode=FanMode(status["acfs"]),
                     v_swing_mode=SwingMode(status["acvs"]),
