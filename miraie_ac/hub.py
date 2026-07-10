@@ -23,7 +23,18 @@ class MirAIeHub:
         return self
 
     async def __aexit__(self, *excinfo):
-        await self.http.close()
+        await self.close()
+
+    async def close(self):
+        for task in list(self.background_tasks):
+            if not task.done():
+                task.cancel()
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    pass
+        if self.http and not self.http.closed:
+            await self.http.close()
 
     def __build_headers__(self):
         return {

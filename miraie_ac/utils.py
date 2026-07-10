@@ -4,7 +4,7 @@ import re
 
 
 def is_valid_email(addr):
-    if re.match(r"^[0-9a-zA-Z\.\_]+\@[0-9a-zA-Z]+\.[0-9a-zA-Z]+$", addr):
+    if re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", addr):
         return True
     else:
         return False
