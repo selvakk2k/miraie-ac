@@ -1,9 +1,11 @@
-# MirAIe API for Python
+# MirAIe-AC-IN API for Python
+
+A fork of [rkzofficial/miraie-ac](https://github.com/rkzofficial/miraie-ac), focused on Panasonic MirAIe AC models sold in India. This is a clean break from upstream — fixes and features here are scoped to Indian-market models and firmware, and are not intended to track or merge back into the original project.
 
 ### Installation
 
 ```
-pip install miraie-ac
+pip install miraie-ac-in
 ```
 
 ### Get started
