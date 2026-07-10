@@ -54,3 +54,15 @@ logger:
 
 ### Notes
 [List of panasonic ACs](https://www.panasonic.com/in/consumer/air-conditioners/split-ac/?browsing=params&sort=Featured&page=1)
+
+---
+
+## Fork Features
+* **Firmware 3.02+ Room Temperature Fix**: Parsed packed room temperature string values based on version checking.
+* **Converti 8-in-1 support**: Added extra enums for 60% and 50% capacity modes.
+* **Stability Improvement**: Implemented `close()` method to cancel/await active MQTT loop tasks and close the HTTP ClientSession cleanly, preventing process/resource leaks.
+* **Email Validation**: Upgraded the email regex to support subdomains and hyphenated domains (e.g. `user@mail.co.uk`).
+* **Sensor/Control Parsing**: Added parsing of `acng` (Nanoe), `acfc` (Filter Clean), `rssi` (Wi-Fi RSSI), and `cnt` (Control Source).
+
+## Credits
+This fork was developed with the assistance of [Claude](https://claude.ai) (Anthropic) and [Antigravity](https://github.com/google-deepmind) (Google DeepMind).

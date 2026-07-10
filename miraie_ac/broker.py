@@ -189,3 +189,14 @@ class MirAIeBroker:
         await self.client.publish(
             topic, json.dumps(self.build_converti_mode_payload(mode))
         )
+
+    # Nanoe Air Purification (Untested - no physical device to verify)
+    def build_nanoe_payload(self, state: bool):
+        payload = self.build_base_payload()
+        payload["acng"] = "on" if state else "off"
+        return payload
+
+    async def set_nanoe(self, topic: str, state: bool):
+        await self.client.publish(
+            topic, json.dumps(self.build_nanoe_payload(state))
+        )

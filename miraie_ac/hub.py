@@ -221,6 +221,10 @@ class MirAIeHub:
                     hvac_mode=HVACMode.AUTO,
                     preset_mode=PresetMode.NONE,
                     converti_mode=ConvertiMode.OFF,
+                    nanoe_mode="off",
+                    filter_clean_alert=False,
+                    wifi_signal=0,
+                    control_source="an",
                 )
             else:
                 status_obj = DeviceStatus(
@@ -242,6 +246,10 @@ class MirAIeHub:
                     if status["acem"] == "on"
                     else PresetMode.NONE,
                     converti_mode=ConvertiMode(status.get("cnv", 0)),
+                    nanoe_mode=status.get("acng", "off"),
+                    filter_clean_alert=status.get("acfc", "off") == "on",
+                    wifi_signal=int(status.get("rssi", 0)) if status.get("rssi") is not None else 0,
+                    control_source=status.get("cnt", "an"),
                 )
 
             device.set_status(status_obj)

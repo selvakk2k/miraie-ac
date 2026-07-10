@@ -19,6 +19,10 @@ class DeviceStatus:
         hvac_mode: HVACMode,
         preset_mode: PresetMode,
         converti_mode: ConvertiMode,
+        nanoe_mode: str = "off",
+        filter_clean_alert: bool = False,
+        wifi_signal: int = 0,
+        control_source: str = "an",
     ):
         self.is_online = is_online
         self.temperature = temperature
@@ -31,6 +35,10 @@ class DeviceStatus:
         self.hvac_mode = hvac_mode
         self.preset_mode = preset_mode
         self.converti_mode = converti_mode
+        self.nanoe_mode = nanoe_mode
+        self.filter_clean_alert = filter_clean_alert
+        self.wifi_signal = wifi_signal
+        self.control_source = control_source
         LOGGER.debug(f"Device status: {self.__str__()}")
     
     def __str__(self):
@@ -45,7 +53,11 @@ class DeviceStatus:
             f"Display mode: {self.display_mode}\n" +
             f"Hvac mode: {self.hvac_mode}\n" +
             f"Preset mode: {self.preset_mode}\n" +
-            f"Converti mode: {self.converti_mode}\n"
+            f"Converti mode: {self.converti_mode}\n" +
+            f"Nanoe mode: {self.nanoe_mode}\n" +
+            f"Filter clean alert: {self.filter_clean_alert}\n" +
+            f"Wifi signal: {self.wifi_signal}\n" +
+            f"Control source: {self.control_source}\n"
         )
         
     def __repr__(self):
@@ -164,6 +176,10 @@ class Device:
             if status["acec"] == "on"
             else PresetMode.NONE,
             converti_mode=ConvertiMode(status.get("cnv", 0)),
+            nanoe_mode=status.get("acng", "off"),
+            filter_clean_alert=status.get("acfc", "off") == "on",
+            wifi_signal=int(status.get("rssi", 0)) if status.get("rssi") is not None else 0,
+            control_source=status.get("cnt", "an"),
         )
 
         self.set_status(status_obj)
@@ -208,3 +224,6 @@ class Device:
     
     async def set_converti_mode(self, mode: ConvertiMode):
         await self.broker.set_converti_mode(self.control_topic, mode)
+
+    async def set_nanoe(self, state: bool):
+        await self.broker.set_nanoe(self.control_topic, state)
