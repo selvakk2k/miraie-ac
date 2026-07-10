@@ -5,4 +5,4 @@ statusUrl = "https://app.miraie.in/simplifi/v1/deviceManagement/devices/{deviceI
 deviceDetailsUrl = "https://app.miraie.in/simplifi/v1/deviceManagement/devices/deviceId"
 energyConsumptionUrl =  "https://app.miraie.in/simplifi/v1/powerConsumption/devices/{deviceId}?grain={periodType}&startDate={fromDate}&endDate={toDate}"
 
-PACKAGE_NAME = "custom_components.miraie"
+PACKAGE_NAME = "custom_components.miraie_in"
