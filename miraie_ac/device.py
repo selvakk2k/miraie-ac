@@ -126,7 +126,7 @@ class Device:
             self.connection_status_topic, self.connection_status_handler
         )
 
-    def __del__(self):
+    def close(self):
         self.broker.remove_device_callback(self.status_topic)
         self.broker.remove_device_callback(self.connection_status_topic)
         
@@ -176,7 +176,7 @@ class Device:
             if status["acec"] == "on"
             else PresetMode.NONE,
             converti_mode=ConvertiMode(status.get("cnv", 0)),
-            nanoe_mode=status.get("acng", "off"),
+            nanoe_mode=status.get("acngs", status.get("acng", "off")),
             filter_clean_alert=status.get("acfc", "off") == "on",
             wifi_signal=int(status.get("rssi", 0)) if status.get("rssi") is not None else 0,
             control_source=status.get("cnt", "an"),

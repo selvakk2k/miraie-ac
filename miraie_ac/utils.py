@@ -10,19 +10,20 @@ def is_valid_email(addr):
         return False
 
 
-def toFloat(value: str) -> float:
+def toFloat(value: str) -> float | None:
     if value is None:
-        return -1.0
+        return None
     try:
         return float(value)
     except ValueError:
-        return -1.0
+        return None
 
 
-def parse_room_temp(value: str, firmware_version: str = "") -> float:
+def parse_room_temp(value: str, firmware_version: str = "") -> float | None:
     """Parse rmtmp, accounting for the packed format used in firmware 3.02+."""
     try:
-        major, minor = firmware_version.split('.')[:2]
+        cleaned_version = "".join(c for c in firmware_version if c.isdigit() or c == '.')
+        major, minor = cleaned_version.split('.')[:2]
         is_packed_firmware = (int(major), int(minor)) >= (3, 2)
     except (ValueError, AttributeError):
         is_packed_firmware = False

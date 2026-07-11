@@ -14,8 +14,9 @@ from .logger import LOGGER
 
 
 class MirAIeHub:
-    def __init__(self):
-        self.http = aiohttp.ClientSession()
+    def __init__(self, session: aiohttp.ClientSession = None):
+        self.http = session or aiohttp.ClientSession()
+        self._close_session = (session is None)
         self.topics_map: dict[str, MirAIeTopic] = {}
         self.background_tasks = set()
 
@@ -33,7 +34,13 @@ class MirAIeHub:
                     await task
                 except asyncio.CancelledError:
                     pass
-        if self.http and not self.http.closed:
+        
+        # Cascade close to all registered devices to clear callbacks
+        if hasattr(self, "home") and self.home and hasattr(self.home, "devices"):
+            for device in self.home.devices:
+                device.close()
+
+        if self._close_session and self.http and not self.http.closed:
             await self.http.close()
 
     def __build_headers__(self):
@@ -246,7 +253,7 @@ class MirAIeHub:
                     if status["acem"] == "on"
                     else PresetMode.NONE,
                     converti_mode=ConvertiMode(status.get("cnv", 0)),
-                    nanoe_mode=status.get("acng", "off"),
+                    nanoe_mode=status.get("acngs", status.get("acng", "off")),
                     filter_clean_alert=status.get("acfc", "off") == "on",
                     wifi_signal=int(status.get("rssi", 0)) if status.get("rssi") is not None else 0,
                     control_source=status.get("cnt", "an"),

@@ -30,15 +30,19 @@ class MirAIeBroker:
 
     async def on_connect(self):
         for topic in self.commandTopics:
-            print("Subscribing to topic: ", topic)
+            LOGGER.debug(f"Subscribing to topic: {topic}")
             await self.client.subscribe(topic)
 
     def on_message(self, message: Message):
         parsed = json.loads(message.payload.decode("utf-8"))
         func = self.status_callbacks.get(message.topic.value)
-        func(parsed)
+        if func:
+            try:
+                func(parsed)
+            except Exception as error:
+                LOGGER.error(f"Error handling message on topic {message.topic.value}: {error}", exc_info=True)
 
-    async def connect(self, username: str, access_token: User, get_token):
+    async def connect(self, username: str, access_token: str, get_token):
         # Set on_token_expire callback
         password = access_token
 
