@@ -1,0 +1,28 @@
+name: Feature Request
+description: Suggest an enhancement for the library
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Description
+      description: A clear and concise description of what the limitation is.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: A clear and concise description of what you want to happen.
+    validations:
+      required: true
+  - type: dropdown
+    id: physical_device
+    attributes:
+      label: Can you test this against a physical device?
+      description: Real hardware confirmation is critical for testing MQTT topic structures and status states.
+      options:
+        - "Yes, I own a Panasonic AC and can test/capture MQTT messages."
+        - "No, I do not have a physical device to test with."
+    validations:
+      required: true

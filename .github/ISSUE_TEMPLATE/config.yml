@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Integration Setup Issue
+    url: https://github.com/selvakk2k/ha-miraie-ac-in/issues/new/choose
+    about: If your issue is with config flows, entities, or integration in Home Assistant.
+  - name: Lovelace Card Issue
+    url: https://github.com/selvakk2k/miraie-ac-card-in/issues/new/choose
+    about: If your issue is with frontend Lovelace card layout/controls.
