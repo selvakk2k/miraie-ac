@@ -15,7 +15,7 @@ from .logger import LOGGER
 
 class MirAIeHub:
     def __init__(self, session: aiohttp.ClientSession = None):
-        self.http = session or aiohttp.ClientSession()
+        self.http = session
         self._close_session = (session is None)
         self.topics_map: dict[str, MirAIeTopic] = {}
         self.background_tasks = set()
@@ -50,6 +50,9 @@ class MirAIeHub:
         }
 
     async def init(self, username: str, password: str, broker: MirAIeBroker):
+        if self.http is None:
+            self.http = aiohttp.ClientSession()
+
         self._broker = broker
 
         await self._authenticate(username, password)
