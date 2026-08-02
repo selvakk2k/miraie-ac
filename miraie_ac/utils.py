@@ -17,3 +17,23 @@ def toFloat(value: str) -> float:
         return float(value)
     except ValueError:
         return -1.0
+
+
+def toRoomTemp(value: str) -> float:
+    """Parse the room temperature (rmtmp) from a status payload.
+
+    Panasonic ACs report room temperatures in 0.5 degree steps, so a valid
+    fractional part is only 0.0 or 0.5. On some newer firmware, the rmtmp value
+    is encoded with unknown data before the actual room temperature,
+    e.g. 150.27 -> 27, 2.29 -> 29, 61.26 -> 26. So when the value carries a
+    fractional part that is neither zero nor 0.5, that decimal points to the
+    actual room temperature.
+    """
+    temp = toFloat(value)
+    if temp == -1.0:
+        return temp
+    fractional = temp - int(temp)
+    if fractional != 0 and fractional != 0.5:
+        # The decimal points to the actual room temperature.
+        return float(round(fractional * 100))
+    return temp
