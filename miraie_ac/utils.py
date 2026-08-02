@@ -20,7 +20,10 @@ def toFloat(value: str) -> float | None:
 
 
 def parse_room_temp(value: str, firmware_version: str = "") -> float | None:
-    """Parse rmtmp, accounting for the packed format used in firmware 3.02+."""
+    """Parse rmtmp, accounting for sub-degree high-resolution format in firmware 3.02+."""
+    if not value:
+        return None
+
     try:
         cleaned_version = "".join(c for c in firmware_version if c.isdigit() or c == '.')
         major, minor = cleaned_version.split('.')[:2]
@@ -30,7 +33,12 @@ def parse_room_temp(value: str, firmware_version: str = "") -> float | None:
 
     if is_packed_firmware and '.' in value:
         try:
-            return float(value.split('.')[1])
+            prefix_str, temp_str = value.split('.')
+            integer_temp = float(temp_str)
+            if integer_temp <= 0:
+                return None
+            prefix_byte = int(prefix_str)
+            return round(integer_temp + (prefix_byte / 256.0), 2)
         except (ValueError, IndexError):
             return toFloat(value)
 
