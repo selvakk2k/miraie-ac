@@ -18,6 +18,7 @@ class MirAIeBroker:
 
     def __init__(self) -> None:
         self.status_callbacks: dict[str, callable] = {}
+        self.connected = asyncio.Event()
 
     def register_device_callback(self, topic: str, callback):
         self.status_callbacks[topic] = callback
@@ -62,12 +63,14 @@ class MirAIeBroker:
                     tls_context=context,
                 ) as client:
                     self.client = client
+                    self.connected.set()
                     await self.on_connect()
                     LOGGER.info(f"Broker connection has been established")
                     async for message in client.messages:
                         self.on_message(message)
 
             except MqttError as error:
+                self.connected.clear()
                 LOGGER.error(f'Error "{error}". Reconnecting in {self.reconnect_interval} seconds.')
                 password = await get_token()
                 await asyncio.sleep(self.reconnect_interval)
