@@ -75,6 +75,14 @@ class MirAIeHub:
         self.background_tasks.add(task)
         task.add_done_callback(self.background_tasks.remove)
 
+        try:
+            await asyncio.wait_for(broker.connected.wait(), timeout=30)
+        except (asyncio.TimeoutError, TimeoutError):
+            LOGGER.warning(
+                "MQTT broker connection did not complete within 30s; "
+                "commands issued before it connects may fail until it does."
+            )
+
     @property
     def broker(self):
         return self._broker
