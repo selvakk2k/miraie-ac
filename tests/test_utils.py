@@ -22,5 +22,13 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(parse_room_temp("25.5", "2.04"), 25.5)
         self.assertEqual(parse_room_temp("26.0", "3.00"), 26.0)
 
+    def test_build_temperature_payload(self):
+        from miraie_ac.broker import MirAIeBroker
+        broker = MirAIeBroker()
+        self.assertEqual(broker.build_temperature_payload(27.0)["actmp"], "27")
+        self.assertEqual(broker.build_temperature_payload(27)["actmp"], "27")
+        self.assertEqual(broker.build_temperature_payload(26.5)["actmp"], "26.5")
+
 if __name__ == "__main__":
     unittest.main()
+

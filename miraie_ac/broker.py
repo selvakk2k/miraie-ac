@@ -94,7 +94,10 @@ class MirAIeBroker:
     # Temperature
     def build_temperature_payload(self, temperature: float):
         payload = self.build_base_payload()
-        payload["actmp"] = str(temperature)
+        if isinstance(temperature, (float, int)) and float(temperature).is_integer():
+            payload["actmp"] = str(int(temperature))
+        else:
+            payload["actmp"] = str(temperature)
         return payload
 
     async def set_temperature(self, topic: str, temperature: float):
