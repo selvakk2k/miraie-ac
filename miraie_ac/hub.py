@@ -179,25 +179,35 @@ class MirAIeHub:
                 self.topics_map[item.id] = topic
 
         device_ids = ",".join(list(map(lambda device: device.id, devices)))
-        device_details = await self._get_device_details(device_ids)
+        device_details = []
+        if device_ids:
+            try:
+                device_details = await self._get_device_details(device_ids)
+            except Exception as e:
+                LOGGER.warning("Failed to fetch batched device details: %s", e)
 
         for dd in device_details:
-            device = next(d for d in devices if d.id == dd["deviceId"])
+            matching = [d for d in devices if d.id == dd.get("deviceId")]
+            if not matching:
+                continue
+            device = matching[0]
 
-            details = DeviceDetails(
-                model_name=dd["modelName"],
-                mac_address=dd["macAddress"],
-                category=dd["category"],
-                brand=dd["brand"],
-                firmware_version=dd["firmwareVersion"],
-                serial_number=dd["serialNumber"],
-                model_number=dd["modelNumber"],
-                product_serial_number=dd["productSerialNumber"],
-            )
+            try:
+                details = DeviceDetails(
+                    model_name=dd.get("modelName", ""),
+                    mac_address=dd.get("macAddress", ""),
+                    category=dd.get("category", ""),
+                    brand=dd.get("brand", ""),
+                    firmware_version=dd.get("firmwareVersion", ""),
+                    serial_number=dd.get("serialNumber", ""),
+                    model_number=dd.get("modelNumber", ""),
+                    product_serial_number=dd.get("productSerialNumber", ""),
+                )
+                device.set_details(details)
+            except Exception as e:
+                LOGGER.warning("Incomplete device details for %s: %s", dd.get("deviceId"), e)
 
-            device.set_details(details)
-
-        self.home = Home(id=json_data["homeId"], devices=devices)
+        self.home = Home(id=json_data.get("homeId", ""), devices=devices)
         return self.home
 
     # Get home details
