@@ -29,6 +29,28 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(broker.build_temperature_payload(27)["actmp"], "27")
         self.assertEqual(broker.build_temperature_payload(26.5)["actmp"], "26.5")
 
+    def test_hub_context_manager_and_session_auto_init(self):
+        import asyncio
+        from unittest.mock import patch, AsyncMock
+        from miraie_ac.hub import MirAIeHub
+
+        async def _run_test():
+            async with MirAIeHub() as hub:
+                self.assertIsNotNone(hub.http)
+                mock_resp = AsyncMock(status=200)
+                mock_resp.json = AsyncMock(return_value={
+                    "accessToken": "test_token",
+                    "refreshToken": "test_refresh",
+                    "userId": "test_user",
+                    "expiresIn": 3600,
+                })
+                with patch.object(hub.http, "post", new_callable=AsyncMock, return_value=mock_resp):
+                    await hub._authenticate("user@example.com", "pass")
+                    self.assertEqual(hub.user.access_token, "test_token")
+
+        asyncio.run(_run_test())
+
+
 if __name__ == "__main__":
     unittest.main()
 
