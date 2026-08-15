@@ -24,6 +24,9 @@ class MirAIeHub:
         self.background_tasks = set()
 
     async def __aenter__(self):
+        if self.http is None:
+            self.http = aiohttp.ClientSession()
+            self._close_session = True
         return self
 
     async def __aexit__(self, *excinfo):
@@ -106,6 +109,10 @@ class MirAIeHub:
 
     # Authenticate with the MirAIe API
     async def _authenticate(self, username: str, password: str):
+        if self.http is None:
+            self.http = aiohttp.ClientSession()
+            self._close_session = True
+
         isEmail = is_valid_email(username)
 
         data = {
@@ -212,6 +219,10 @@ class MirAIeHub:
 
     # Get home details
     async def _get_home_details(self):
+        if self.http is None:
+            self.http = aiohttp.ClientSession()
+            self._close_session = True
+
         response = await self.http.get(
             constants.homesUrl, headers=self.__build_headers__()
         )
