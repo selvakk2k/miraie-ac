@@ -121,14 +121,16 @@ class Device:
         self.broker = broker
 
         self._callbacks = set()
-        self.broker.register_device_callback(self.status_topic, self.status_handler)
-        self.broker.register_device_callback(
-            self.connection_status_topic, self.connection_status_handler
-        )
+        if self.broker:
+            self.broker.register_device_callback(self.status_topic, self.status_handler)
+            self.broker.register_device_callback(
+                self.connection_status_topic, self.connection_status_handler
+            )
 
     def close(self):
-        self.broker.remove_device_callback(self.status_topic)
-        self.broker.remove_device_callback(self.connection_status_topic)
+        if self.broker:
+            self.broker.remove_device_callback(self.status_topic)
+            self.broker.remove_device_callback(self.connection_status_topic)
         
     def __str__(self):
         return (
