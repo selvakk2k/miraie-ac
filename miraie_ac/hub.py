@@ -22,6 +22,7 @@ class MirAIeHub:
         self._close_session = (session is None)
         self.topics_map: dict[str, MirAIeTopic] = {}
         self.background_tasks = set()
+        self._broker = None
 
     async def __aenter__(self):
         if self.http is None:
