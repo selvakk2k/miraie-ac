@@ -69,11 +69,19 @@ class MirAIeBroker:
                     async for message in client.messages:
                         self.on_message(message)
 
-            except MqttError as error:
+            except asyncio.CancelledError:
+                self.connected.clear()
+                LOGGER.info("Broker connection task cancelled.")
+                raise
+            except (MqttError, Exception) as error:
                 self.connected.clear()
                 LOGGER.error(f'Error "{error}". Reconnecting in {self.reconnect_interval} seconds.')
-                password = await get_token()
+                try:
+                    password = await get_token()
+                except Exception as token_err:
+                    LOGGER.error(f"Failed to refresh auth token: {token_err}")
                 await asyncio.sleep(self.reconnect_interval)
+
 
     def build_base_payload(self):
         return {
