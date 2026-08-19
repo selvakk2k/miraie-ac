@@ -77,6 +77,24 @@ class TestMirAIeBroker(unittest.IsolatedAsyncioTestCase):
         p_dry = self.broker.build_hvac_mode_payload(HVACMode.DRY)
         self.assertEqual(p_dry["acmd"], "dry")
 
+    async def test_publish_when_connected(self):
+        """Test publish succeeds when client is connected."""
+        mock_client = AsyncMock()
+        self.broker.client = mock_client
+        self.broker.connected.set()
+
+        await self.broker.set_power("test/topic", PowerMode.ON)
+        mock_client.publish.assert_awaited_once()
+
+    async def test_publish_timeout_when_disconnected(self):
+        """Test publish raises MqttError when broker stays disconnected past timeout."""
+        from aiomqtt import MqttError
+        self.broker.client = None
+        self.broker.connected.clear()
+
+        with self.assertRaises(MqttError):
+            await self.broker.publish("test/topic", "{}", timeout=0.05)
+
 
 if __name__ == "__main__":
     unittest.main()
