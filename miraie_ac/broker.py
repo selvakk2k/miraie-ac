@@ -71,17 +71,43 @@ class MirAIeBroker:
 
             except asyncio.CancelledError:
                 self.connected.clear()
+                self.client = None
                 LOGGER.info("Broker connection task cancelled.")
                 raise
             except (MqttError, Exception) as error:
                 self.connected.clear()
+                self.client = None
                 LOGGER.error(f'Error "{error}". Reconnecting in {self.reconnect_interval} seconds.')
                 try:
                     password = await get_token()
                 except Exception as token_err:
                     LOGGER.error(f"Failed to refresh auth token: {token_err}")
                 await asyncio.sleep(self.reconnect_interval)
+            else:
+                self.connected.clear()
+                self.client = None
+                LOGGER.info(f"Broker connection stream ended cleanly. Reconnecting in {self.reconnect_interval} seconds.")
+                await asyncio.sleep(self.reconnect_interval)
 
+    async def publish(self, topic: str, payload: str, timeout: float = 10.0):
+        """Publish a message to MQTT topic, waiting for active connection if reconnecting."""
+        if not self.connected.is_set() or getattr(self, "client", None) is None:
+            LOGGER.debug(f"Waiting up to {timeout}s for broker connection before publishing to {topic}...")
+            try:
+                await asyncio.wait_for(self.connected.wait(), timeout=timeout)
+            except (asyncio.TimeoutError, TimeoutError):
+                raise MqttError(f"MQTT broker is not connected (timeout waiting for reconnect)")
+
+        client = getattr(self, "client", None)
+        if client is None:
+            raise MqttError("MQTT client is not initialized")
+
+        try:
+            await client.publish(topic, payload)
+        except MqttError:
+            self.connected.clear()
+            self.client = None
+            raise
 
     def build_base_payload(self):
         return {
@@ -97,7 +123,7 @@ class MirAIeBroker:
         return payload
 
     async def set_power(self, topic: str, power: PowerMode):
-        await self.client.publish(topic, json.dumps(self.build_power_payload(power)))
+        await self.publish(topic, json.dumps(self.build_power_payload(power)))
 
     # Temperature
     def build_temperature_payload(self, temperature: float):
@@ -109,7 +135,7 @@ class MirAIeBroker:
         return payload
 
     async def set_temperature(self, topic: str, temperature: float):
-        await self.client.publish(
+        await self.publish(
             topic, json.dumps(self.build_temperature_payload(temperature))
         )
 
@@ -120,7 +146,7 @@ class MirAIeBroker:
         return payload
 
     async def set_hvac_mode(self, topic: str, mode: HVACMode):
-        await self.client.publish(topic, json.dumps(self.build_hvac_mode_payload(mode)))
+        await self.publish(topic, json.dumps(self.build_hvac_mode_payload(mode)))
 
     # Fan Mode
     def build_fan_mode_payload(self, mode: FanMode):
@@ -129,7 +155,7 @@ class MirAIeBroker:
         return payload
 
     async def set_fan_mode(self, topic: str, mode: FanMode):
-        await self.client.publish(topic, json.dumps(self.build_fan_mode_payload(mode)))
+        await self.publish(topic, json.dumps(self.build_fan_mode_payload(mode)))
 
     # Preset Mode
     def build_preset_mode_payload(self, mode: PresetMode):
@@ -159,7 +185,7 @@ class MirAIeBroker:
         return payload
 
     async def set_preset_mode(self, topic: str, mode: PresetMode):
-        await self.client.publish(
+        await self.publish(
             topic, json.dumps(self.build_preset_mode_payload(mode))
         )
 
@@ -170,7 +196,7 @@ class MirAIeBroker:
         return payload
 
     async def set_v_swing_mode(self, topic: str, mode: SwingMode):
-        await self.client.publish(
+        await self.publish(
             topic, json.dumps(self.build_v_swing_mode_payload(mode))
         )
     
@@ -181,7 +207,7 @@ class MirAIeBroker:
         return payload
 
     async def set_h_swing_mode(self, topic: str, mode: SwingMode):
-        await self.client.publish(
+        await self.publish(
             topic, json.dumps(self.build_h_swing_mode_payload(mode))
         )
 
@@ -192,7 +218,7 @@ class MirAIeBroker:
         return payload
 
     async def set_display_mode(self, topic: str, mode: DisplayMode):
-        await self.client.publish(
+        await self.publish(
             topic, json.dumps(self.build_display_mode_payload(mode))
         )
         
@@ -205,7 +231,7 @@ class MirAIeBroker:
         return payload
 
     async def set_converti_mode(self, topic: str, mode: ConvertiMode):
-        await self.client.publish(
+        await self.publish(
             topic, json.dumps(self.build_converti_mode_payload(mode))
         )
 
@@ -216,6 +242,6 @@ class MirAIeBroker:
         return payload
 
     async def set_nanoe(self, topic: str, state: bool):
-        await self.client.publish(
+        await self.publish(
             topic, json.dumps(self.build_nanoe_payload(state))
         )
