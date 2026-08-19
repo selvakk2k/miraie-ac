@@ -70,7 +70,7 @@ class MirAIeHub:
     async def _init_broker(self, broker: MirAIeBroker):
         topics = self.get_device_topics()
         broker.set_topics(topics)
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         # Listen for mqtt messages in an (unawaited) asyncio task
         task = loop.create_task(
             broker.connect(self.home.id, self.user.access_token, self.get_token)
