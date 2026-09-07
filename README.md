@@ -78,4 +78,4 @@ asyncio.run(main())
 * **Code Implementation & Engineering**: **Antigravity** (Google DeepMind) — asyncio MQTT connection lifecycles, memory leak resolution, Converti 8-in-1 decoding, and pytest suite.
 * **Pre-Release Code Review & Auditing**: **Claude** (Anthropic) — independent architectural review, code audits, and edge-case verification.
 
-Licensed under the **MIT License**. See the `LICENSE` file for the original license text.
+Licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
