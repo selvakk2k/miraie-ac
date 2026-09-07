@@ -2,6 +2,10 @@
 
 [![PyPI version](https://badge.fury.io/py/miraie-ac-in.svg)](https://badge.fury.io/py/miraie-ac-in)
 [![Python Version](https://img.shields.io/pypi/pyversions/miraie-ac-in.svg)](https://pypi.org/project/miraie-ac-in/)
+[![Stable](https://img.shields.io/github/v/release/selvakk2k/miraie-ac-in?label=Stable&style=flat-square)](https://github.com/selvakk2k/miraie-ac-in/releases/latest)
+[![Beta](https://img.shields.io/github/v/release/selvakk2k/miraie-ac-in?include_prereleases&label=Beta&color=orange&style=flat-square)](https://github.com/selvakk2k/miraie-ac-in/releases)
+[![AI-Assisted](https://img.shields.io/badge/AI%20Assisted-Antigravity%20%7C%20Claude-blueviolet?style=flat-square&logo=google)](https://github.com/selvakk2k)
+[![AI Attribution](https://img.shields.io/badge/AI%20Attribution-AIA%20PAI%20Nc%20Hin-orange?style=flat-square)](https://aiattribution.github.io/interpret-attribution)
 
 A Python API client wrapper for controlling Panasonic MirAIe-enabled Air Conditioners. This library handles MQTT message parsing, connection loops, and telemetry status decoding.
 
@@ -70,7 +74,9 @@ asyncio.run(main())
 * Originally authored and developed by [@rkzofficial](https://github.com/rkzofficial).
 * Features contributed by upstream community developers: [@deCodeIt](https://github.com/deCodeIt), [@gutpull](https://github.com/gutpull), and [@ankitduseja](https://github.com/ankitduseja).
 
-### Fork Authors & Contributors
-* Fork enhancements (firmware 3.02+ temperature fix, Converti 8-in-1, and MQTT resource leak resolutions) developed by [@selvakk2k](https://github.com/selvakk2k) with assistance from **Claude** (Anthropic) and **Gemini/Antigravity** (Google DeepMind).
+### Fork Maintainers & Contributors
+* **Lead Architecture & API Design**: [@selvakk2k](https://github.com/selvakk2k) — physical device telemetry capture, MQTT protocol analysis, and domain requirements.
+* **Code Implementation & Engineering**: **Antigravity** (Google DeepMind) — asyncio MQTT connection lifecycles, memory leak resolution, Converti 8-in-1 decoding, and pytest suite.
+* **Pre-Release Code Review & Auditing**: **Claude** (Anthropic) — independent architectural review, code audits, and edge-case verification.
 
 Licensed under the **MIT License**. See the `LICENSE` file for the original license text.
